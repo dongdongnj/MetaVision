@@ -1,8 +1,10 @@
 import 'package:fluent_ui/fluent_ui.dart' hide Page;
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:metavision/page/HomePage.dart';
 import 'package:provider/provider.dart';
 import 'package:url_strategy/url_strategy.dart';
 
+import 'common/WalletListModel.dart';
 import 'common/global.dart';
 import 'common/theme.dart';
 
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: AppTheme()),
+          ChangeNotifierProvider.value(value: WalletListModel()),
         ],
         builder: (context, _) {
           final appTheme = context.watch<AppTheme>();
@@ -60,10 +63,7 @@ class MyApp extends StatelessWidget {
                   );
                 }
             ),
-            // initialRoute: Global.notNeedLogin() ? 'profileAccount' : 'login',
-            routes: {
-
-            },
+            home: HomePage(),
           );
         }
     );

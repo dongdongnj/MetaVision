@@ -1,4 +1,5 @@
 export 'profile.dart';
+export 'walletProfile.dart';
 import 'package:quiver/core.dart';
 
 T? checkOptional<T>(Optional<T?>? optional, T? Function()? def) {

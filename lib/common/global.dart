@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:metavision/models/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webviewx/webviewx.dart';
 
@@ -13,14 +14,14 @@ enum TestMode {
   test
 }
 
-String DefaultSeedPath = "m/44'/0'/0'";
+const String DefaultSeedPath = "m/44'/0'/0'";
 
 class Global {
   static late SharedPreferences _prefs;
   static late Profile profile;
   static TestMode testMode = TestMode.test;
   static String appVersion = "v0.1.0";
-  static late Wallet wallet;
+  static Wallet? curWallet;
   static late WebViewXController webviewController;
 
   static Future init() async {
@@ -36,10 +37,10 @@ class Global {
       try {
         profile = Profile.fromJson(jsonDecode(_profile));
       } catch (e) {
-        print(e);
+        debugPrint(e.toString());
       }
     }else{
-      profile= Profile(token: "", seedPath: DefaultSeedPath, theme: 0);
+      profile = const Profile(wallets: [], theme: 0, curWallet: 0);
     }
 
     debugPrint(profile.toJson().toString());
@@ -49,42 +50,30 @@ class Global {
     _prefs.setString("profile", jsonEncode(profile.toJson()));
   }
 
-  static Future clearPrefs() async {
-    profile = Profile(token: "", seedPath: DefaultSeedPath, theme: 0);
-    await _prefs.clear();
-  }
-
-
-  static notNeedLogin() {
-    return profile.token != null && profile.token!.isNotEmpty;
-  }
-
-  static Future initWalletFromNewMnemonic(String mnemonic, String path, String password) async {
-    wallet = Wallet.fromMnenomic(mnemonic, path: path);
-    profile = profile.copyWith(token: ecryptMnemonic(mnemonic, password), seedPath: path);
+  static Future addWalletFromMnemonic(String mnemonic, {String path = DefaultSeedPath, String password = ""}) async {
+    curWallet = Wallet.fromMnenomic(mnemonic, path: path);
+    profile.wallets.add(WalletProfile(token: ecryptMnemonic(mnemonic, password), seedPath: path, name: ""));
+    profile = profile.copyWith(curWallet: profile.wallets.length - 1);
     saveProfile();
     debugPrint(profile.toJson().toString());
+
+    await curWallet?.getBalance(refresh: true);
   }
 
-  static Future<bool> initWalletFromProfile(String password) async {
-    String mnemonic = decryptMnemonic(profile.token!, password);
+  static Future<bool> initWalletFromProfile(int index, String password) async {
+    String mnemonic = decryptMnemonic(profile.wallets[index].token, password);
     if( mnemonic.isNotEmpty  ) {
-      var seedPath = profile.seedPath;
-      wallet = Wallet.fromMnenomic(mnemonic, path: seedPath);
+      var seedPath = profile.wallets[index].seedPath;
+      curWallet = Wallet.fromMnenomic(mnemonic, path: seedPath);
+      profile = profile.copyWith(curWallet: index);
+      saveProfile();
       debugPrint(profile.toJson().toString());
+      await curWallet?.getBalance(refresh: true);
       return true;
     } else {
       debugPrint(profile.toJson().toString());
       return false;
     }
-  }
-
-  static Future initWalletFromOldMnemonic(String mnemonic, String path, String password) async {
-    wallet = Wallet.fromMnenomic(mnemonic, path: path);
-    profile = profile.copyWith(token: ecryptMnemonic(mnemonic, password), seedPath: path);
-
-    saveProfile();
-    debugPrint(profile.toJson().toString());
   }
 
   static Future<String> genesisNft(int totalSupply, String privKey, {double feeB = 0.5}) async {

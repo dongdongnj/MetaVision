@@ -7,62 +7,55 @@ import 'index.dart';
 class Profile {
 
   const Profile({
-    this.metaid,
-    required this.token,
-    required this.seedPath,
     required this.theme,
     this.locale,
+    required this.curWallet,
+    required this.wallets,
   });
 
-  final String? metaid;
-  final String token;
-  final String seedPath;
   final int theme;
   final String? locale;
+  final int curWallet;
+  final List<WalletProfile> wallets;
 
   factory Profile.fromJson(Map<String,dynamic> json) => Profile(
-    metaid: json['metaid']?.toString(),
-    token: json['token'].toString(),
-    seedPath: json['seedPath'].toString(),
     theme: json['theme'] as int,
-    locale: json['locale']?.toString()
+    locale: json['locale']?.toString(),
+    curWallet: json['curWallet'] as int,
+    wallets: (json['wallets'] as List? ?? []).map((e) => WalletProfile.fromJson(e as Map<String, dynamic>)).toList()
   );
   
   Map<String, dynamic> toJson() => {
-    'metaid': metaid,
-    'token': token,
-    'seedPath': seedPath,
     'theme': theme,
-    'locale': locale
+    'locale': locale,
+    'curWallet': curWallet,
+    'wallets': wallets.map((e) => e.toJson()).toList()
   };
 
   Profile clone() => Profile(
-    metaid: metaid,
-    token: token,
-    seedPath: seedPath,
     theme: theme,
-    locale: locale
+    locale: locale,
+    curWallet: curWallet,
+    wallets: wallets.map((e) => e.clone()).toList()
   );
 
 
   Profile copyWith({
-    Optional<String?>? metaid,
-    String? token,
-    String? seedPath,
     int? theme,
-    Optional<String?>? locale
+    Optional<String?>? locale,
+    int? curWallet,
+    List<WalletProfile>? wallets
   }) => Profile(
-    metaid: checkOptional(metaid, () => this.metaid),
-    token: token ?? this.token,
-    seedPath: seedPath ?? this.seedPath,
     theme: theme ?? this.theme,
     locale: checkOptional(locale, () => this.locale),
+    curWallet: curWallet ?? this.curWallet,
+    wallets: wallets ?? this.wallets,
   );
 
   @override
   bool operator ==(Object other) => identical(this, other)
-    || other is Profile && metaid == other.metaid && token == other.token && seedPath == other.seedPath && theme == other.theme && locale == other.locale;
+    || other is Profile && theme == other.theme && locale == other.locale && curWallet == other.curWallet && wallets == other.wallets;
 
   @override
-  int get hashCode => metaid.hashCode ^ token.hashCode ^ seedPath.hashCode ^ theme.hashCode ^ locale.hashCode;
+  int get hashCode => theme.hashCode ^ locale.hashCode ^ curWallet.hashCode ^ wallets.hashCode;
 }

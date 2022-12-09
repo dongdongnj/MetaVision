@@ -49,6 +49,7 @@ dependencies:
   encrypt: ^5.0.1
   dio: ^4.0.6
   bip39: ^1.0.3
+  dropdown_search: ^5.0.2
 
   dartsv:
     path: ../dartsv
