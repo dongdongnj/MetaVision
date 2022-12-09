@@ -52,7 +52,7 @@ class Global {
 
   static Future addWalletFromMnemonic(String mnemonic, {String path = DefaultSeedPath, String password = ""}) async {
     curWallet = Wallet.fromMnenomic(mnemonic, path: path);
-    profile.wallets.add(WalletProfile(token: ecryptMnemonic(mnemonic, password), seedPath: path, name: ""));
+    profile = profile.copyWith(wallets: profile.wallets + [WalletProfile(token: ecryptMnemonic(mnemonic, password), seedPath: path, name: "")]);
     profile = profile.copyWith(curWallet: profile.wallets.length - 1);
     saveProfile();
     debugPrint(profile.toJson().toString());

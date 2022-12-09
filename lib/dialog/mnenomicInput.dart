@@ -4,9 +4,10 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 class MnemonicInput extends StatefulWidget{
+  String? mnemonic;
   bool Function(String mnemonic, {String seedPath, String password}) onOK;
 
-  MnemonicInput({super.key, required this.onOK});
+  MnemonicInput({super.key, required this.onOK, this.mnemonic});
 
   @override
   _MnemonicInput createState() => _MnemonicInput();
@@ -19,6 +20,12 @@ class _MnemonicInput extends State<MnemonicInput> {
   bool _isPasswordCanSee = false;
 
   @override
+  void initState() {
+    super.initState();
+    _mnemonic = widget.mnemonic ?? "";
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ContentDialog(
       title: const Text("导入钱包"),
@@ -27,6 +34,7 @@ class _MnemonicInput extends State<MnemonicInput> {
         child: Column(
           children: [
             TextBox(
+              initialValue: _mnemonic,
               header: "助记词:",
               maxLines: 3,
               onChanged: (mne){

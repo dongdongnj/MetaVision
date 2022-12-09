@@ -3,6 +3,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:metavision/common/global.dart';
 import 'package:metavision/dialog/mnenomicInput.dart';
+import 'package:metavision/wallet/wallet.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/WalletListModel.dart';
@@ -64,10 +65,10 @@ class _InfoPage extends State<InfoPanel> {
                     children: [
                       SelectableText("${_walletList.curretWallet?.address}"),
                       IconButton(
-                          icon: const Icon(FluentIcons.copy),
-                          onPressed: () {
-                            Clipboard.setData(ClipboardData(text: _walletList.curretWallet?.address));
-                          }
+                        icon: const Icon(FluentIcons.copy),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: _walletList.curretWallet?.address));
+                        }
                       )
                     ],
                   ),
@@ -88,7 +89,7 @@ class _InfoPage extends State<InfoPanel> {
   }
 
   bool _onMnemonicInput(String mnemonic, {String seedPath = DefaultSeedPath, String password=""}) {
-    _walletList.addWalletFromMnenomic(mnemonic, mnemonic, path: seedPath, password: password);
+    _walletList.addWalletFromMnenomic(mnemonic, path: seedPath, password: password);
     return true;
   }
 
@@ -98,7 +99,11 @@ class _InfoPage extends State<InfoPanel> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Button(child: const Text("删除钱包"), onPressed: (){}),
+          Button(child: const Text("新建钱包"), onPressed: (){
+            showDialog(
+              context: context, builder: (_) => MnemonicInput(onOK: _onMnemonicInput, mnemonic: Wallet.generateMnenomic(),),
+            );
+          }),
           const SizedBox(width: 5,),
           Button(child: const Text("导入钱包"), onPressed: (){
             showDialog(

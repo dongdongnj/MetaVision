@@ -19,6 +19,7 @@ class _HomePage extends State<HomePage> {
       key: viewKey,
       appBar: NavigationAppBar(
         automaticallyImplyLeading: false,
+        title: Text("MetaVision", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
         actions: Row(
           children: [
             const Spacer(),
@@ -31,7 +32,20 @@ class _HomePage extends State<HomePage> {
         )
       ),
       pane: NavigationPane(
+        size: NavigationPaneSize(openWidth: 150),
         items:[
+          PaneItem(
+            icon: const Icon(FluentIcons.a_a_d_logo),
+            title: const Text('NFT'),
+            body: InfoPanel(),
+          ),
+          PaneItem(
+            icon: const Icon(FluentIcons.all_currency),
+            title: const Text('FT'),
+            body: InfoPanel(),
+          ),
+        ],
+        footerItems: [
           PaneItem(
             icon: const Icon(FluentIcons.account_management),
             title: const Text('我的钱包'),
